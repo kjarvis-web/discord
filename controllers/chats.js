@@ -14,11 +14,15 @@ const getTokenFrom = (request) => {
   return null;
 };
 
-chatsRouter.get('/', async (request, response) => {
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
-  const user = await User.findById(decodedToken.id);
-  const chats = await Chat.find({ $or: [{ user1: user }, { user2: user }] });
-  response.json(chats);
+chatsRouter.get('/', async (request, response, next) => {
+  try {
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+    const user = await User.findById(decodedToken.id);
+    const chats = await Chat.find({ $or: [{ user1: user }, { user2: user }] }).populate('messages');
+    response.json(chats);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // post new chat
@@ -26,14 +30,18 @@ chatsRouter.post('/', async (request, response, next) => {
   try {
     const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
     const user = await User.findById(decodedToken.id);
+    const recipient = await User.findById(request.body.recipient);
 
     const chat = new Chat({
-      chat: request.body.text,
+      chat: request.body.chat,
       user1: user.id,
-      user2: request.body.recipient,
+      user2: recipient.id,
     });
 
     const savedChat = await chat.save();
+    user.chats = user.chats.concat(savedChat);
+    await user.save();
+
     response.status(201).json(savedChat);
   } catch (error) {
     next(error);
@@ -53,10 +61,12 @@ chatsRouter.post('/:id', async (request, response, next) => {
     });
     const savedMessage = await newMessage.save();
 
-    findChat.chat = findChat.chat.concat(savedMessage);
+    findChat.messages = findChat.messages.concat(savedMessage);
     await findChat.save();
     response.status(201).json(savedMessage);
   } catch (error) {
     next(error);
   }
 });
+
+module.exports = chatsRouter;

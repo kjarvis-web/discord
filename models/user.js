@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   passwordHash: String,
   chats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }],
   date: { type: Date, default: Date.now },
+  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 userSchema.set('toJSON', {
