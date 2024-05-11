@@ -102,4 +102,34 @@ usersRouter.post('/:id/accept_friend_request', async (request, response, next) =
   }
 });
 
+// reject friend request
+usersRouter.post('/:id/reject_friend_request', async (request, response, next) => {
+  try {
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' });
+    }
+    // logged user
+    const user = await User.findById(decodedToken.id);
+    // user who sent friend request
+    const from = await User.findById(request.params.id);
+    const newFriendRequests = user.friendRequests.filter((r) => r.from.toString() !== from.id);
+    const rejected = {
+      from: from.id,
+      status: 'rejected',
+    };
+    if (user.friends.find((f) => f.toString() === from.id)) {
+      const removeFriend = user.friends.filter((f) => f.toString() !== from.id);
+      console.log(removeFriend);
+      user.friends = [...removeFriend];
+      await user.save();
+    }
+    user.friendRequests = [...newFriendRequests, rejected];
+    const newUser = await user.save();
+    response.status(201).json(newUser);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = usersRouter;
