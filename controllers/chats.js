@@ -18,6 +18,7 @@ chatsRouter.get('/', async (request, response, next) => {
   try {
     const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
     const user = await User.findById(decodedToken.id);
+
     const chats = await Chat.find({ $or: [{ user1: user }, { user2: user }] }).populate('messages');
     response.json(chats);
   } catch (error) {

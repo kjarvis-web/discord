@@ -94,6 +94,8 @@ usersRouter.post('/:id/accept_friend_request', async (request, response, next) =
     user.friendRequests = [...newFriendRequests, accepted];
     user.friends = [...user.friends, from];
 
+    from.friends = from.friends.concat(user.id);
+    await from.save();
     const newUser = await user.save();
 
     response.status(201).json(newUser);
@@ -120,11 +122,13 @@ usersRouter.post('/:id/reject_friend_request', async (request, response, next) =
     };
     if (user.friends.find((f) => f.toString() === from.id)) {
       const removeFriend = user.friends.filter((f) => f.toString() !== from.id);
-      console.log(removeFriend);
       user.friends = [...removeFriend];
+      from.friends = from.friends.filter((f) => f.toString() !== user.id);
+      await from.save();
       await user.save();
     }
     user.friendRequests = [...newFriendRequests, rejected];
+
     const newUser = await user.save();
     response.status(201).json(newUser);
   } catch (error) {
