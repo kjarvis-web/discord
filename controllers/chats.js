@@ -26,6 +26,15 @@ chatsRouter.get('/', async (request, response, next) => {
   }
 });
 
+chatsRouter.get('/:id', async (request, response, next) => {
+  try {
+    const chat = await Chat.findById(request.params.id).populate('messages');
+    response.json(chat);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // post new chat
 chatsRouter.post('/', async (request, response, next) => {
   try {
@@ -41,7 +50,9 @@ chatsRouter.post('/', async (request, response, next) => {
 
     const savedChat = await chat.save();
     user.chats = user.chats.concat(savedChat);
+    recipient.chats = recipient.chats.concat(savedChat);
     await user.save();
+    await recipient.save();
 
     response.status(201).json(savedChat);
   } catch (error) {
@@ -59,6 +70,7 @@ chatsRouter.post('/:id', async (request, response, next) => {
     const newMessage = new Message({
       text: request.body.text,
       user,
+      chatId: request.body.chatId,
     });
     const savedMessage = await newMessage.save();
 
