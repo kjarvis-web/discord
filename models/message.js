@@ -4,6 +4,7 @@ const messageSchema = new mongoose.Schema({
   text: String,
   date: { type: Date, default: Date.now },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  chatId: String,
 });
 
 messageSchema.set('toJSON', {
