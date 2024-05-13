@@ -19,7 +19,10 @@ chatsRouter.get('/', async (request, response, next) => {
     const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
     const user = await User.findById(decodedToken.id);
 
-    const chats = await Chat.find({ $or: [{ user1: user }, { user2: user }] }).populate('messages');
+    const chats = await Chat.find({ $or: [{ user1: user }, { user2: user }] }).populate({
+      path: 'messages',
+      populate: { path: 'user' },
+    });
     response.json(chats);
   } catch (error) {
     next(error);
@@ -28,7 +31,10 @@ chatsRouter.get('/', async (request, response, next) => {
 
 chatsRouter.get('/:id', async (request, response, next) => {
   try {
-    const chat = await Chat.findById(request.params.id).populate('messages');
+    const chat = await Chat.findById(request.params.id).populate({
+      path: 'messages',
+      populate: { path: 'user' },
+    });
     response.json(chat);
   } catch (error) {
     next(error);
