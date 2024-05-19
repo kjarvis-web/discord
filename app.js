@@ -8,6 +8,7 @@ const logger = require('./utils/logger');
 const usersRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
 const chatsRouter = require('./controllers/chats');
+const messagesRouter = require('./controllers/messages');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(middleware.requestLogger);
 app.use('/users', usersRouter);
 app.use('/login', loginRouter);
 app.use('/chat', chatsRouter);
+app.use('/message', messagesRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

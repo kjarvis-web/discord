@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
       created: { type: Date, default: Date.now },
     },
   ],
+  avatar: Buffer,
 });
 
 userSchema.set('toJSON', {
