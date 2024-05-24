@@ -7,6 +7,7 @@ const chatSchmea = new mongoose.Schema({
   chat: String,
   messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }],
   date: { type: Date, default: Date.now },
+  notify: Number,
 });
 
 chatSchmea.set('toJSON', {

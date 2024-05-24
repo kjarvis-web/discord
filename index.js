@@ -24,6 +24,10 @@ io.on('connection', (socket) => {
   socket.on('send_message', (id, data) => {
     socket.to(id).emit('receive_message', data);
   });
+
+  socket.on('edit_message', (id, data) => {
+    socket.to(id).emit('receive_edit', data);
+  });
 });
 
 server.listen(config.PORT, () => {

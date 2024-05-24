@@ -52,6 +52,7 @@ chatsRouter.post('/', async (request, response, next) => {
       chat: request.body.chat,
       user1: user.id,
       user2: recipient.id,
+      notify: 0,
     });
 
     const savedChat = await chat.save();
@@ -83,6 +84,21 @@ chatsRouter.post('/:id', async (request, response, next) => {
     findChat.messages = findChat.messages.concat(savedMessage);
     await findChat.save();
     response.status(201).json(savedMessage);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// notify
+chatsRouter.put('/:id', async (request, response, next) => {
+  try {
+    const { id } = request.params;
+    const chat = {
+      // chat: request.body.text,
+      notify: request.body.notify,
+    };
+    const updatedMessage = await Chat.findByIdAndUpdate(id, chat, { new: true });
+    response.json(updatedMessage);
   } catch (error) {
     next(error);
   }
