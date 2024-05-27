@@ -137,4 +137,28 @@ usersRouter.post('/:id/reject_friend_request', async (request, response, next) =
   }
 });
 
+// remove friend
+usersRouter.post('/:id/remove_friend', async (request, response, next) => {
+  try {
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' });
+    }
+    const user = await User.findById(decodedToken.id);
+    const friendToRemove = await User.findById(request.params.id);
+    const newUserFriends = user.friends.filter((friend) => friend.toString() !== friendToRemove.id);
+    const newFriendToRemove = friendToRemove.friends.filter(
+      (friend) => friend.toString() !== user.id
+    );
+    user.friends = [...newUserFriends];
+    friendToRemove.friends = [...newFriendToRemove];
+    const newUser = await user.save();
+    await friendToRemove.save();
+    newUser.populate('friends');
+    response.status(201).json(newUser);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = usersRouter;
