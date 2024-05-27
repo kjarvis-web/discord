@@ -130,6 +130,7 @@ usersRouter.post('/:id/reject_friend_request', async (request, response, next) =
     user.friendRequests = [...newFriendRequests, rejected];
 
     const newUser = await user.save();
+    await newUser.populate('friends');
     response.status(201).json(newUser);
   } catch (error) {
     next(error);
