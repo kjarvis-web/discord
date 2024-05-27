@@ -60,7 +60,7 @@ usersRouter.post('/:id/friend_request', async (request, response, next) => {
     // get user to send friend request to
     const user = await User.findById(request.params.id);
     const friendRequest = {
-      from: loggedUser,
+      from: loggedUser.id,
       status: 'pending',
     };
     user.friendRequests = user.friendRequests.concat(friendRequest);
@@ -95,8 +95,8 @@ usersRouter.post('/:id/accept_friend_request', async (request, response, next) =
     user.friends = [...user.friends, from];
 
     from.friends = from.friends.concat(user.id);
-    await from.save();
-    const newUser = await user.save();
+    await user.save();
+    const newUser = await from.save();
 
     response.status(201).json(newUser);
   } catch (error) {

@@ -28,6 +28,10 @@ io.on('connection', (socket) => {
   socket.on('edit_message', (id, data) => {
     socket.to(id).emit('receive_edit', data);
   });
+
+  socket.on('notify', (id, data) => {
+    socket.to(id).emit('receive_notify', data);
+  });
 });
 
 server.listen(config.PORT, () => {
