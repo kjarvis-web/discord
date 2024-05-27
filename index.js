@@ -32,6 +32,10 @@ io.on('connection', (socket) => {
   socket.on('notify', (id, data) => {
     socket.to(id).emit('receive_notify', data);
   });
+
+  socket.on('leave_all', () => {
+    socket.disconnect();
+  });
 });
 
 server.listen(config.PORT, () => {
