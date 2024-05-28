@@ -152,6 +152,17 @@ usersRouter.post('/:id/remove_friend', async (request, response, next) => {
     );
     user.friends = [...newUserFriends];
     friendToRemove.friends = [...newFriendToRemove];
+    const findRequest = user.friendRequests.find((fr) => fr.from.toString() === friendToRemove.id);
+
+    if (findRequest) {
+      user.friendRequests = user.friendRequests.filter(
+        (fr) => fr.from.toString() !== friendToRemove.id
+      );
+    } else {
+      friendToRemove.friendRequests = friendToRemove.friendRequests.filter(
+        (fr) => fr.from.toString() !== user.id
+      );
+    }
     const newUser = await user.save();
     await friendToRemove.save();
     newUser.populate('friends');
