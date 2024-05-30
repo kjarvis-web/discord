@@ -40,4 +40,5 @@ io.on('connection', (socket) => {
 
 server.listen(config.PORT, () => {
   logger.info(`Server running on port ${config.PORT}`);
+  logger.info(`url is ${config.url}`);
 });
