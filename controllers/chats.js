@@ -1,10 +1,8 @@
 const chatsRouter = require('express').Router();
 const jwt = require('jsonwebtoken');
-const config = require('../utils/config');
 const Chat = require('../models/chat');
 const User = require('../models/user');
 const Message = require('../models/message');
-const logger = require('../utils/logger');
 
 const getTokenFrom = (request) => {
   const authorization = request.get('authorization');
@@ -17,12 +15,16 @@ const getTokenFrom = (request) => {
 chatsRouter.get('/', async (request, response, next) => {
   try {
     const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
-    const user = await User.findById(decodedToken.id);
 
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' });
+    }
+    const user = await User.findById(decodedToken.id);
     const chats = await Chat.find({ $or: [{ user1: user }, { user2: user }] }).populate({
       path: 'messages',
       populate: { path: 'user' },
     });
+
     response.json(chats);
   } catch (error) {
     next(error);
