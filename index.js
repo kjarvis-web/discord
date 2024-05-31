@@ -11,7 +11,7 @@ const logger = require('./utils/logger');
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: config.url,
+    origin: true,
     methods: ['GET', 'POST'],
   },
 });
