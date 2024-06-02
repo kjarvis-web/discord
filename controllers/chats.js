@@ -84,6 +84,7 @@ chatsRouter.post('/:id', async (request, response, next) => {
     const savedMessage = await newMessage.save();
 
     findChat.messages = findChat.messages.concat(savedMessage);
+    findChat.hidden = false;
     await findChat.save();
     response.status(201).json(savedMessage);
   } catch (error) {
@@ -98,6 +99,20 @@ chatsRouter.put('/:id', async (request, response, next) => {
     const chat = {
       // chat: request.body.text,
       notify: request.body.notify,
+    };
+    const updatedMessage = await Chat.findByIdAndUpdate(id, chat, { new: true });
+    response.json(updatedMessage);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// hide
+chatsRouter.put('/:id/hide', async (request, response, next) => {
+  try {
+    const { id } = request.params;
+    const chat = {
+      hidden: request.body.hidden,
     };
     const updatedMessage = await Chat.findByIdAndUpdate(id, chat, { new: true });
     response.json(updatedMessage);

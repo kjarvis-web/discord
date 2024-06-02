@@ -9,6 +9,7 @@ const chatSchmea = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   notify: Number,
   created: { type: Number, default: Date.now },
+  hidden: { type: Boolean, default: false },
 });
 
 chatSchmea.set('toJSON', {
