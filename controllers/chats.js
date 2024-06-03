@@ -20,7 +20,9 @@ chatsRouter.get('/', async (request, response, next) => {
       return response.status(401).json({ error: 'token invalid' });
     }
     const user = await User.findById(decodedToken.id);
-    const chats = await Chat.find({ $or: [{ user1: user }, { user2: user }] }).populate({
+    const chats = await Chat.find({
+      $or: [{ user1: user }, { user2: user }, { users: user }],
+    }).populate({
       path: 'messages',
       populate: { path: 'user' },
     });
@@ -93,7 +95,7 @@ chatsRouter.post('/:id', async (request, response, next) => {
 });
 
 // notify
-chatsRouter.put('/:id', async (request, response, next) => {
+chatsRouter.put('/:id/notify', async (request, response, next) => {
   try {
     const { id } = request.params;
     const chat = {

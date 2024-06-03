@@ -9,6 +9,7 @@ const usersRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
 const chatsRouter = require('./controllers/chats');
 const messagesRouter = require('./controllers/messages');
+const groupsRouter = require('./controllers/groups');
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/users', usersRouter);
 app.use('/login', loginRouter);
 app.use('/chat', chatsRouter);
 app.use('/message', messagesRouter);
+app.use('/group', groupsRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
