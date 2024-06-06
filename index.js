@@ -19,6 +19,7 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   socket.on('join_room', (id) => {
     socket.join(id);
+    console.log(`socket ${socket.id} joined rooms: ${id}`);
   });
 
   socket.on('send_message', (id, data) => {
