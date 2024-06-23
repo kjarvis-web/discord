@@ -30,4 +30,25 @@ messagesRouter.put('/:id', async (request, response, next) => {
   }
 });
 
+// delete message
+messagesRouter.put('/:id/remove', async (request, response, next) => {
+  try {
+    const { id } = request.params;
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+    const user = await User.findById(decodedToken.id);
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' });
+    }
+    const message = {
+      text: request.body.text,
+      user,
+      deleted: request.body.deleted,
+    };
+    const deletedMessage = await Message.findByIdAndUpdate(id, message, { new: true });
+    response.json(deletedMessage);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = messagesRouter;

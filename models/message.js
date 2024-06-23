@@ -6,6 +6,7 @@ const messageSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   chatId: String,
   created: { type: Number, default: Date.now },
+  deleted: {type: Boolean, default: false}
 });
 
 messageSchema.set('toJSON', {
